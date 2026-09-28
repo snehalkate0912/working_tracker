@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Working Tracker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* ================= LAYOUT ================= */
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 235px;
+            background: #111827;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .logo {
+            padding: 10px 12px 25px;
+            border-bottom: 1px solid #374151;
+            margin-bottom: 25px;
+        }
+
+        .logo h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .menu-title {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 12px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .menu-item:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .menu-item.active {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .menu-icon {
+            margin-right: 8px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 235px;
+            width: calc(100% - 235px);
+        }
+
+        /* ================= TOP BAR ================= */
+
+        .topbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #dbe2ea;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .topbar-title h1 {
+            font-size: 21px;
+            color: #0f172a;
+        }
+
+        .topbar-title p {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* ================= ONLINE ================= */
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            color: #15803d;
+            padding: 7px 13px;
+            border-radius: 6px;
+            border: 1px solid #bbf7d0;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: #16a34a;
+            border-radius: 50%;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 28px 30px;
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+            background: #1e3a8a;
+            color: white;
+            padding: 22px 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #1e40af;
+        }
+
+        .welcome h2 {
+            font-size: 22px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .welcome p {
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #c2410c;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border-radius: 7px;
+            padding: 19px;
+            border: 1px solid #d6dee8;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .employees-card::before {
+            background: #1e3a8a;
+        }
+
+        .working-card::before {
+            background: #16a34a;
+        }
+
+        .visits-card::before {
+            background: #d97706;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .summary-number {
+            font-size: 27px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .summary-description {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* ================= SECTION ================= */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 19px;
+            color: #0f172a;
+        }
+
+        .section-header span {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* ================= EMPLOYEES ================= */
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .employee-card {
+            background: #ffffff;
+            border: 1px solid #d6dee8;
+            border-radius: 7px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        }
+
+        .employee-card:hover {
+            box-shadow: 0 2px 5px rgba(15, 23, 42, 0.08);
+            border-color: #b8c4d1;
+        }
+
+        .employee-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+
+        .employee-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .employee-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 17px;
+            border: 1px solid #c7d2fe;
+        }
+
+        .employee-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .employee-id {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status-working {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #1e40af;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-not-working {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* ================= DETAILS ================= */
+
+        .employee-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: #f8fafc;
+            padding: 13px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #edf1f5;
+        }
+
+        .detail-label {
+            display: block;
+            font-size: 9px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 12px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        /* ================= TIME ================= */
+
+        .attendance-time {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .time-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .time-label {
+            display: block;
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .time-value {
+            font-size: 12px;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .time-working {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .time-working .time-value {
+            color: #15803d;
+        }
+
+        .time-completed {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .time-completed .time-value {
+            color: #1e40af;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .button-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .check-in {
+            background: #16a34a;
+        }
+
+        .check-in:hover {
+            background: #15803d;
+        }
+
+        .check-out {
+            background: #dc2626;
+        }
+
+        .check-out:hover {
+            background: #b91c1c;
+        }
+
+        .btn.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* ================= VISIT HISTORY ================= */
+
+        .visit-section {
+            margin-top: 35px;
+        }
+
+        .visit-search {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            font-size: 14px;
+            z-index: 2;
+        }
+
+        .search-box {
+            width: 330px;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            font-size: 13px;
+            background: white;
+            color: #334155;
+        }
+
+        .search-box:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.10);
+        }
+
+        .visit-container {
+            background: #ffffff;
+            border: 1px solid #d6dee8;
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+        }
+
+        .visit-card {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .visit-card:last-child {
+            border-bottom: none;
+        }
+
+        .visit-employee {
+            min-width: 205px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .visit-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+            border: 1px solid #c7d2fe;
+        }
+
+        .visit-employee h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .visit-employee p {
+            margin: 4px 0 0;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .visit-details {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .visit-item {
+            font-size: 12px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .visit-item strong {
+            display: block;
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid #fed7aa;
+        }
+
+        .completed {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .working {
+            color: #1e40af;
+            font-weight: 700;
+        }
+
+        .no-search-result {
+            display: none;
+            padding: 25px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .no-data {
+            background: white;
+            border: 1px dashed #cbd5e1;
+            border-radius: 7px;
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 950px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                width: calc(100% - 190px);
+            }
+
+            .employee-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .employee-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .employee-details {
+                grid-template-columns: 1fr;
+            }
+
+            .attendance-time {
+                grid-template-columns: 1fr;
+            }
+
+            .visit-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .visit-details {
+                width: 100%;
+                gap: 18px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>WORKING TRACKER</h2>
+
+            <p>Employee Work Management</p>
+
+        </div>
+
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+
+        <a href="{% url 'dashboard' %}"
+           class="menu-item active">
+
+            <span class="menu-icon">▣</span>
+
+            Dashboard
+
+        </a>
+
+
+        <a href="#employees"
+           class="menu-item">
+
+            <span class="menu-icon">👥</span>
+
+            Employees
+
+        </a>
+
+
+        <a href="{% url 'visit_history' %}"
+           class="menu-item">
+
+            <span class="menu-icon">📋</span>
+
+            Visit History
+
+        </a>
+
+
+        <div class="menu-title"
+             style="margin-top: 30px;">
+
+            System
+
+        </div>
+
+
+        <a href="/admin/"
+           class="menu-item">
+
+            <span class="menu-icon">⚙</span>
+
+            Admin Panel
+
+        </a>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div class="topbar-title">
+
+                <h1>
+                    Working Tracker
+                </h1>
+
+                <p>
+                    Employee work activity overview
+                </p>
+
+            </div>
+
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                Online
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CONTENT -->
+
+        <div class="content">
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <h2>
+                    Welcome to Working Tracker
+                </h2>
+
+                <p>
+                    Manage employee attendance, field visits and working hours from one place.
+                </p>
+
+            </div>
+
+
+
+            <!-- MESSAGES -->
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="message">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+
+            <!-- ================= SUMMARY ================= -->
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card employees-card">
+
+                    <div class="summary-label">
+                        TOTAL EMPLOYEES
+                    </div>
+
+                    <div class="summary-number">
+                        {{ employees|length }}
+                    </div>
+
+                    <div class="summary-description">
+                        Registered employees
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card working-card">
+
+                    <div class="summary-label">
+                        CURRENTLY WORKING
+                    </div>
+
+                    <div class="summary-number">
+                        {{ active_employee_ids|length }}
+                    </div>
+
+                    <div class="summary-description">
+                        Active employees
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card visits-card">
+
+                    <div class="summary-label">
+                        TOTAL VISITS
+                    </div>
+
+                    <div class="summary-number">
+                        {{ visits|length }}
+                    </div>
+
+                    <div class="summary-description">
+                        Recorded work visits
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ================= EMPLOYEES ================= -->
+
+            <section id="employees">
+
+
+                <div class="section-header">
+
+                    <h2>
+                        Employee Attendance
+                    </h2>
+
+                    <span>
+                        Employees
+                    </span>
+
+                </div>
+
+
+
+                <div class="employee-grid">
+
+
+                    {% for data in employee_data %}
+
+                        {% with employee=data.employee %}
+                        {% with latest_visit=data.latest_visit %}
+
+
+                        <div class="employee-card">
+
+
+                            <!-- EMPLOYEE TOP -->
+
+                            <div class="employee-top">
+
+
+                                <div class="employee-profile">
+
+
+                                    <div class="employee-avatar">
+
+                                        {{ employee.name|first|upper }}
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="employee-name">
+
+                                            {{ employee.name }}
+
+                                        </div>
+
+
+                                        <div class="employee-id">
+
+                                            Employee ID:
+                                            {{ employee.id }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                                {% if data.is_working %}
+
+                                    <span class="status-working">
+
+                                        ● Currently Working
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-not-working">
+
+                                        ● Not Working
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <!-- EMPLOYEE DETAILS -->
+
+                            <div class="employee-details">
+
+
+                                <div>
+
+                                    <span class="detail-label">
+                                        Mobile
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ employee.mobile }}
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="detail-label">
+                                        Designation
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ employee.designation }}
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="detail-label">
+                                        Joining Date
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ employee.joining_date }}
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <!-- ================= ATTENDANCE TIME ================= -->
+
+                            <div class="attendance-time">
+
+
+                                <!-- CHECK IN -->
+
+                                <div class="time-box time-working">
+
+                                    <span class="time-label">
+                                        Check In Time
+                                    </span>
+
+                                    <span class="time-value">
+
+                                        {% if latest_visit and latest_visit.check_in %}
+
+                                            {{ latest_visit.check_in|date:"h:i A" }}
+
+                                        {% else %}
+
+                                            Not Yet
+
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+
+
+                                <!-- CHECK OUT -->
+
+                                <div class="time-box time-completed">
+
+                                    <span class="time-label">
+                                        Check Out Time
+                                    </span>
+
+                                    <span class="time-value">
+
+                                        {% if latest_visit and latest_visit.check_out %}
+
+                                            {{ latest_visit.check_out|date:"h:i A" }}
+
+                                        {% else %}
+
+                                            Not Yet
+
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+
+
+                                <!-- WORKING HOURS -->
+
+                                <div class="time-box">
+
+                                    <span class="time-label">
+                                        Working Hours
+                                    </span>
+
+                                    <span class="time-value">
+
+                                        {% if latest_visit and latest_visit.check_in and latest_visit.check_out %}
+
+                                            {{ latest_visit.working_hours }}
+
+                                        {% elif data.is_working %}
+
+                                            Still Working
+
+                                        {% else %}
+
+                                            --
+
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <!-- ================= BUTTONS ================= -->
+
+                            <div class="button-area">
+
+
+                                {% if data.is_working %}
+
+
+                                    <a href="#"
+                                       class="btn check-in disabled">
+
+                                        ✓ Check In
+
+                                    </a>
+
+
+                                    <a href="{% url 'check_out' employee.id %}"
+                                       class="btn check-out">
+
+                                        Check Out
+
+                                    </a>
+
+
+                                {% else %}
+
+
+                                    <a href="{% url 'check_in' employee.id %}"
+                                       class="btn check-in">
+
+                                        ✓ Check In
+
+                                    </a>
+
+
+                                    <a href="#"
+                                       class="btn check-out disabled">
+
+                                        Check Out
+
+                                    </a>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        {% endwith %}
+                        {% endwith %}
+
+
+                    {% empty %}
+
+
+                        <div class="no-data">
+
+                            No employees found.
+
+                            <br><br>
+
+                            Add employees from the Admin Panel.
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- ================= VISIT HISTORY ================= -->
+
+            <section id="visits"
+                     class="visit-section">
+
+
+                <div class="section-header">
+
+                    <h2>
+                        Visit History
+                    </h2>
+
+                    <a href="{% url 'visit_history' %}"
+                       style="
+                           background:#1e3a8a;
+                           color:white;
+                           text-decoration:none;
+                           padding:9px 15px;
+                           border-radius:6px;
+                           font-size:12px;
+                           font-weight:600;
+                       ">
+
+                        View Full History
+
+                    </a>
+
+                </div>
+
+
+
+                <!-- SEARCH -->
+
+                <div class="visit-search">
+
+                    <span class="search-icon">
+                        🔍
+                    </span>
+
+
+                    <input
+                        type="text"
+                        id="employeeSearch"
+                        class="search-box"
+                        placeholder="Search employee name..."
+                        onkeyup="searchEmployee()"
+                    >
+
+                </div>
+
+
+
+                <!-- HISTORY -->
+
+                <div class="visit-container">
+
+
+                    {% for visit in visits %}
+
+
+                        <div class="visit-card"
+                             data-employee="{{ visit.employee.name|lower }}">
+
+
+                            <!-- EMPLOYEE -->
+
+                            <div class="visit-employee">
+
+
+                                <div class="visit-avatar">
+
+                                    {{ visit.employee.name|first|upper }}
+
+                                </div>
+
+
+                                <div>
+
+                                    <h3>
+                                        {{ visit.employee.name }}
+                                    </h3>
+
+                                    <p>
+                                        Employee ID:
+                                        {{ visit.employee.id }}
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <!-- VISIT INFORMATION -->
+
+                            <div class="visit-details">
+
+
+                                <div class="visit-item">
+
+                                    <strong>
+                                        Visit
+                                    </strong>
+
+                                    <span class="badge">
+                                        Visit {{ visit.visit_number }}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="visit-item">
+
+                                    <strong>
+                                        Date
+                                    </strong>
+
+                                    {{ visit.visit_date }}
+
+                                </div>
+
+
+                                <div class="visit-item">
+
+                                    <strong>
+                                        Check In
+                                    </strong>
+
+                                    {% if visit.check_in %}
+
+                                        {{ visit.check_in|date:"h:i A" }}
+
+                                    {% else %}
+
+                                        --
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="visit-item">
+
+                                    <strong>
+                                        Check Out
+                                    </strong>
+
+                                    {% if visit.check_out %}
+
+                                        {{ visit.check_out|date:"h:i A" }}
+
+                                    {% else %}
+
+                                        --
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="visit-item">
+
+                                    <strong>
+                                        Working Hours
+                                    </strong>
+
+                                    {% if visit.check_in and visit.check_out %}
+
+                                        <span class="completed">
+
+                                            {{ visit.working_hours }}
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="working">
+
+                                            Still Working
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% empty %}
+
+
+                        <div class="no-data">
+
+                            No visit records found.
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                    <div id="noSearchResult"
+                         class="no-search-result">
+
+                        No employee history found.
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            Working Tracker © 2026
+            |
+            Employee Work Management System
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- ================= SEARCH SCRIPT ================= -->
+
+<script>
+
+function searchEmployee() {
+
+    const input =
+        document.getElementById("employeeSearch");
+
+    const searchValue =
+        input.value.toLowerCase().trim();
+
+    const visits =
+        document.querySelectorAll(".visit-card");
+
+    const noResult =
+        document.getElementById("noSearchResult");
+
+    let found = false;
+
+    visits.forEach(function(visit) {
+
+        const employeeName =
+            visit.getAttribute("data-employee");
+
+        if (
+            employeeName &&
+            employeeName.includes(searchValue)
+        ) {
+
+            visit.style.display = "flex";
+
+            found = true;
+
+        } else {
+
+            visit.style.display = "none";
+
+        }
+
+    });
+
+    if (
+        searchValue !== "" &&
+        !found
+    ) {
+
+        noResult.style.display = "block";
+
+    } else {
+
+        noResult.style.display = "none";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

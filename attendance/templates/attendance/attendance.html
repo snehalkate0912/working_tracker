@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance - Working Tracker</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .page {
+            min-height: 100vh;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #dbe2ea;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .header p {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #1e3a8a;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #1e40af;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        /* ================= MONTH SELECT ================= */
+
+        .filter-box {
+            background: white;
+            border: 1px solid #d6dee8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .field select {
+            width: 170px;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+            font-size: 13px;
+            color: #334155;
+            outline: none;
+        }
+
+        .field select:focus {
+            border-color: #1e3a8a;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #1e3a8a;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover {
+            background: #1e40af;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #d6dee8;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .working-card::before {
+            background: #1e3a8a;
+        }
+
+        .employee-card-summary::before {
+            background: #16a34a;
+        }
+
+        .attendance-card::before {
+            background: #d97706;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .summary-description {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* ================= EMPLOYEE SECTION ================= */
+
+        .section-title {
+            margin-bottom: 15px;
+        }
+
+        .section-title h2 {
+            font-size: 19px;
+            color: #0f172a;
+        }
+
+        .section-title p {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            background: white;
+            border: 1px solid #d6dee8;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #dbe2ea;
+        }
+
+        td {
+            padding: 15px 16px;
+            border-bottom: 1px solid #edf1f5;
+            font-size: 12px;
+            color: #334155;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* ================= EMPLOYEE ================= */
+
+        .employee-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 7px;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            border: 1px solid #c7d2fe;
+        }
+
+        .employee-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .employee-id {
+            margin-top: 3px;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        /* ================= BADGES ================= */
+
+        .present-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            background: #ecfdf5;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .absent-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* ================= PROGRESS ================= */
+
+        .percentage {
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+
+        .progress {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #1e3a8a;
+            border-radius: 10px;
+        }
+
+        /* ================= SUNDAY NOTE ================= */
+
+        .holiday-note {
+            margin-top: 20px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 13px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* ================= NO DATA ================= */
+
+        .no-data {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .header {
+                padding: 18px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .filter-box {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .field select {
+                width: 100%;
+            }
+
+            .filter-btn {
+                width: 100%;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div>
+
+            <h1>
+                Attendance
+            </h1>
+
+            <p>
+                Employee monthly attendance overview
+            </p>
+
+        </div>
+
+
+        <a href="{% url 'dashboard' %}"
+           class="back-btn">
+
+            ← Dashboard
+
+        </a>
+
+    </header>
+
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <main class="content">
+
+
+        <!-- ================= FILTER ================= -->
+
+        <form method="GET"
+              class="filter-box">
+
+
+            <div class="filter-group">
+
+
+                <div class="field">
+
+                    <label>
+                        Month
+                    </label>
+
+                    <select name="month">
+
+                        <option value="1"
+                            {% if selected_month == 1 %}selected{% endif %}>
+                            January
+                        </option>
+
+                        <option value="2"
+                            {% if selected_month == 2 %}selected{% endif %}>
+                            February
+                        </option>
+
+                        <option value="3"
+                            {% if selected_month == 3 %}selected{% endif %}>
+                            March
+                        </option>
+
+                        <option value="4"
+                            {% if selected_month == 4 %}selected{% endif %}>
+                            April
+                        </option>
+
+                        <option value="5"
+                            {% if selected_month == 5 %}selected{% endif %}>
+                            May
+                        </option>
+
+                        <option value="6"
+                            {% if selected_month == 6 %}selected{% endif %}>
+                            June
+                        </option>
+
+                        <option value="7"
+                            {% if selected_month == 7 %}selected{% endif %}>
+                            July
+                        </option>
+
+                        <option value="8"
+                            {% if selected_month == 8 %}selected{% endif %}>
+                            August
+                        </option>
+
+                        <option value="9"
+                            {% if selected_month == 9 %}selected{% endif %}>
+                            September
+                        </option>
+
+                        <option value="10"
+                            {% if selected_month == 10 %}selected{% endif %}>
+                            October
+                        </option>
+
+                        <option value="11"
+                            {% if selected_month == 11 %}selected{% endif %}>
+                            November
+                        </option>
+
+                        <option value="12"
+                            {% if selected_month == 12 %}selected{% endif %}>
+                            December
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Year
+                    </label>
+
+                    <select name="year">
+
+                        <option value="{{ selected_year }}">
+                            {{ selected_year }}
+                        </option>
+
+                        <option value="{{ selected_year|add:'-1' }}">
+                            {{ selected_year|add:'-1' }}
+                        </option>
+
+                        <option value="{{ selected_year|add:'1' }}">
+                            {{ selected_year|add:'1' }}
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit"
+                        class="filter-btn">
+
+                    View Attendance
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+
+        <!-- ================= SUMMARY ================= -->
+
+        <div class="summary-grid">
+
+
+            <div class="summary-card working-card">
+
+                <div class="summary-label">
+                    WORKING DAYS
+                </div>
+
+                <div class="summary-number">
+                    {{ working_days }}
+                </div>
+
+                <div class="summary-description">
+                    Monday to Saturday
+                </div>
+
+            </div>
+
+
+            <div class="summary-card employee-card-summary">
+
+                <div class="summary-label">
+                    TOTAL EMPLOYEES
+                </div>
+
+                <div class="summary-number">
+                    {{ employee_data|length }}
+                </div>
+
+                <div class="summary-description">
+                    Registered employees
+                </div>
+
+            </div>
+
+
+            <div class="summary-card attendance-card">
+
+                <div class="summary-label">
+                    MONTH
+                </div>
+
+                <div class="summary-number">
+                    {{ selected_month }}/{{ selected_year }}
+                </div>
+
+                <div class="summary-description">
+                    Selected attendance period
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= EMPLOYEE ATTENDANCE ================= -->
+
+        <div class="section-title">
+
+            <h2>
+                Employee Attendance
+            </h2>
+
+            <p>
+                Attendance details for the selected month
+            </p>
+
+        </div>
+
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Employee
+                        </th>
+
+                        <th>
+                            Working Days
+                        </th>
+
+                        <th>
+                            Present
+                        </th>
+
+                        <th>
+                            Absent
+                        </th>
+
+                        <th>
+                            Attendance
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for data in employee_data %}
+
+
+                        <tr>
+
+
+                            <!-- EMPLOYEE -->
+
+                            <td>
+
+                                <div class="employee-info">
+
+
+                                    <div class="avatar">
+
+                                        {{ data.employee.name|first|upper }}
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="employee-name">
+
+                                            {{ data.employee.name }}
+
+                                        </div>
+
+                                        <div class="employee-id">
+
+                                            Employee ID:
+                                            {{ data.employee.id }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- WORKING DAYS -->
+
+                            <td>
+
+                                {{ data.working_days }}
+
+                            </td>
+
+
+
+                            <!-- PRESENT -->
+
+                            <td>
+
+                                <span class="present-badge">
+
+                                    {{ data.present_days }} Present
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- ABSENT -->
+
+                            <td>
+
+                                <span class="absent-badge">
+
+                                    {{ data.absent_days }} Absent
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- ATTENDANCE -->
+
+                            <td>
+
+                                <div class="percentage">
+
+                                    {{ data.attendance_percentage }}%
+
+                                </div>
+
+
+                                <div class="progress">
+
+                                    <div class="progress-bar"
+                                         style="width: {{ data.attendance_percentage }}%;">
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+                            <td colspan="5">
+
+                                <div class="no-data">
+
+                                    No employees found.
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- ================= SUNDAY ================= -->
+
+        <div class="holiday-note">
+
+            <strong>Sunday:</strong>
+            Weekly holiday. Sunday is not counted as a working day
+            or an absent day.
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        Working Tracker © 2026
+        |
+        Employee Attendance Management System
+
+    </footer>
+
+
+</div>
+
+
+</body>
+
+</html>

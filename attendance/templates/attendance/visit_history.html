@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Visit History - Working Tracker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f5f9;
+            color: #172033;
+        }
+
+        .page {
+            min-height: 100vh;
+        }
+
+        /* ================= TOP BAR ================= */
+
+        .topbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid #dbe2ea;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .topbar h1 {
+            font-size: 21px;
+            color: #0f172a;
+        }
+
+        .topbar p {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .online {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 7px 13px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #16a34a;
+            border-radius: 50%;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        /* ================= HEADER CARD ================= */
+
+        .history-header-card {
+            background: linear-gradient(
+                135deg,
+                #111d3d,
+                #29458f
+            );
+
+            color: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 22px;
+        }
+
+        .history-header-card h2 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .history-header-card p {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-bottom: 22px;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 13px;
+            padding: 14px 17px;
+        }
+
+        .summary-number {
+            font-size: 23px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #dbeafe;
+        }
+
+        /* ================= SEARCH ================= */
+
+        .search-area {
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            width: 400px;
+            max-width: 100%;
+            padding: 13px 18px 13px 42px;
+            border: 1px solid #d6dee8;
+            border-radius: 25px;
+            outline: none;
+            background: white;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .search-box:focus {
+            border-color: #29458f;
+            box-shadow: 0 0 0 3px rgba(41,69,143,0.08);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 400px;
+            max-width: 100%;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 12px;
+            font-size: 16px;
+        }
+
+        /* ================= DATE GROUP ================= */
+
+        .date-group {
+            margin-bottom: 25px;
+        }
+
+        .date-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .date-heading h3 {
+            font-size: 15px;
+            color: #172033;
+        }
+
+        .visit-count {
+            background: #e8eef7;
+            color: #64748b;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* ================= VISIT CARD ================= */
+
+        .visit-card {
+            background: white;
+            border-radius: 15px;
+            padding: 17px 20px;
+            margin-bottom: 10px;
+            border-left: 5px solid #f28c28;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+        }
+
+        .visit-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .employee-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .employee-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #172033;
+        }
+
+        .employee-id {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .visit-badge {
+            background: #fff1dc;
+            color: #c56b12;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        /* ================= TIME ================= */
+
+        .time-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            margin-left: 54px;
+        }
+
+        .time-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 8px 12px;
+            min-width: 105px;
+        }
+
+        .time-label {
+            display: block;
+            font-size: 9px;
+            color: #94a3b8;
+            margin-bottom: 3px;
+        }
+
+        .time-value {
+            font-size: 12px;
+            color: #172033;
+            font-weight: 700;
+        }
+
+        .arrow {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status-row {
+            margin-top: 12px;
+            margin-left: 54px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 13px;
+            border-radius: 18px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .completed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .working {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .missed {
+            background: #fff0dc;
+            color: #c56b12;
+        }
+
+        /* ================= WORKING HOURS ================= */
+
+        .hours {
+            margin-top: 10px;
+            margin-left: 54px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .hours strong {
+            color: #15803d;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .no-result {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 650px) {
+
+            .content {
+                padding: 18px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .history-header-card {
+                padding: 22px;
+            }
+
+            .visit-top {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .time-row {
+                margin-left: 0;
+                flex-wrap: wrap;
+            }
+
+            .status-row,
+            .hours {
+                margin-left: 0;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- ================= TOP BAR ================= -->
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>
+                Working Tracker
+            </h1>
+
+            <p>
+                Employee Work Management
+            </p>
+
+        </div>
+
+        <div class="online">
+
+            <span class="dot"></span>
+
+            Online
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <div class="content">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="history-header-card">
+
+            <h2>
+                Visit History
+            </h2>
+
+            <p>
+                Every field visit, day by day
+            </p>
+
+
+            <div class="summary">
+
+
+                <!-- TOTAL VISITS -->
+
+                <div class="summary-card">
+
+                    <div class="summary-number">
+                        {{ visits|length }}
+                    </div>
+
+                    <div class="summary-label">
+                        Total visits
+                    </div>
+
+                </div>
+
+
+                <!-- WORKING NOW -->
+
+                <div class="summary-card">
+
+                    <div class="summary-number">
+
+                        {% widthratio visits|length 1 1 %}
+
+                    </div>
+
+                    <div class="summary-label">
+                        Working now
+                    </div>
+
+                </div>
+
+
+                <!-- EMPLOYEES -->
+
+                <div class="summary-card">
+
+                    <div class="summary-number">
+
+                        {% regroup visits by employee as employee_list %}
+                        {{ employee_list|length }}
+
+                    </div>
+
+                    <div class="summary-label">
+                        Employees
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= SEARCH ================= -->
+
+        <div class="search-area">
+
+            <div class="search-wrapper">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-box"
+                    placeholder="Search employee name..."
+                    onkeyup="searchVisits()"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= VISITS ================= -->
+
+        {% regroup visits by visit_date as date_list %}
+
+
+        {% for date_group in date_list %}
+
+
+        <div class="date-group">
+
+
+            <div class="date-heading">
+
+                <h3>
+
+                    {{ date_group.grouper|date:"D, M d, Y" }}
+
+                </h3>
+
+                <span class="visit-count">
+
+                    {{ date_group.list|length }} visit{{ date_group.list|length|pluralize }}
+
+                </span>
+
+            </div>
+
+
+            {% for visit in date_group.list %}
+
+
+            <div class="visit-card"
+                 data-name="{{ visit.employee.name|lower }}">
+
+
+                <!-- EMPLOYEE -->
+
+                <div class="visit-top">
+
+                    <div class="employee-info">
+
+
+                        <div class="avatar">
+
+                            {{ visit.employee.name|first|upper }}
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="employee-name">
+
+                                {{ visit.employee.name }}
+
+                                <span class="visit-badge">
+
+                                    Visit {{ visit.visit_number }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="employee-id">
+
+                                Employee ID: {{ visit.employee.id }}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- TIME -->
+
+                <div class="time-row">
+
+
+                    <div class="time-box">
+
+                        <span class="time-label">
+                            Check in
+                        </span>
+
+                        <span class="time-value">
+
+                            {% if visit.check_in %}
+
+                                {{ visit.check_in|date:"h:i A" }}
+
+                            {% else %}
+
+                                --
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+
+                    <div class="time-box">
+
+                        <span class="time-label">
+                            Check out
+                        </span>
+
+                        <span class="time-value">
+
+                            {% if visit.check_out %}
+
+                                {{ visit.check_out|date:"h:i A" }}
+
+                            {% else %}
+
+                                --
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="status-row">
+
+                    {% if visit.check_in and visit.check_out %}
+
+                        <span class="status completed">
+
+                            ✓ Completed
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="status missed">
+
+                            Missed check-out
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- WORKING HOURS -->
+
+                <div class="hours">
+
+                    Working Hours:
+
+                    {% if visit.check_in and visit.check_out %}
+
+                        <strong>
+
+                            {{ visit.working_hours }}
+
+                        </strong>
+
+                    {% else %}
+
+                        <strong class="working">
+
+                            Still Working
+
+                        </strong>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+        {% empty %}
+
+
+        <div class="empty">
+
+            No visit records found.
+
+        </div>
+
+
+        {% endfor %}
+
+
+        <!-- NO SEARCH RESULT -->
+
+        <div id="noResult"
+             class="no-result">
+
+            No employee history found.
+
+        </div>
+
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        Working Tracker © 2026
+        |
+        Employee Attendance Management System
+
+    </div>
+
+
+</div>
+
+
+<!-- ================= SEARCH ================= -->
+
+<script>
+
+function searchVisits() {
+
+    const input =
+        document.getElementById("searchInput");
+
+    const searchValue =
+        input.value.toLowerCase().trim();
+
+    const cards =
+        document.querySelectorAll(".visit-card");
+
+    const groups =
+        document.querySelectorAll(".date-group");
+
+    const noResult =
+        document.getElementById("noResult");
+
+    let found = false;
+
+
+    cards.forEach(function(card) {
+
+        const name =
+            card.getAttribute("data-name");
+
+        if (name.includes(searchValue)) {
+
+            card.style.display = "block";
+
+            found = true;
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+
+    /* Hide empty date groups */
+
+    groups.forEach(function(group) {
+
+        const visibleCards =
+            group.querySelectorAll(
+                ".visit-card[style='display: block;'], .visit-card:not([style*='display: none'])"
+            );
+
+        let hasVisible = false;
+
+        group.querySelectorAll(".visit-card").forEach(function(card) {
+
+            if (card.style.display !== "none") {
+
+                hasVisible = true;
+
+            }
+
+        });
+
+        if (searchValue !== "" && !hasVisible) {
+
+            group.style.display = "none";
+
+        } else {
+
+            group.style.display = "block";
+
+        }
+
+    });
+
+
+    if (searchValue !== "" && !found) {
+
+        noResult.style.display = "block";
+
+    } else {
+
+        noResult.style.display = "none";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
